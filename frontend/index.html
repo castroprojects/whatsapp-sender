@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Message Sender</title>
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      max-width: 500px;
+      width: 100%;
+    }
+    h2 {
+      margin: 0 0 1rem;
+      color: #1e3c72;
+    }
+    textarea, input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #7c3aed, #06b6d4);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .status {
+      margin-top: 1rem;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>WhatsApp Bulk Sender</h2>
+    <form id="sendForm">
+      <label>Upload Number File (.txt):</label>
+      <input type="file" id="fileInput" accept=".txt" required>
+
+      <label>Message:</label>
+      <textarea id="message" rows="6" placeholder="Write your WhatsApp message here..." required></textarea>
+
+      <button type="submit">Send Messages</button>
+    </form>
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    document.getElementById("sendForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const file = document.getElementById("fileInput").files[0];
+      const message = document.getElementById("message").value.trim();
+
+      if (!file || !message) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("message", message);
+
+      document.getElementById("status").innerText = "Sending... Please wait.";
+
+      try {
+        const res = await fetch("http://127.0.0.1:5000/send", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        document.getElementById("status").innerText = data.message;
+      } catch (err) {
+        document.getElementById("status").innerText = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
